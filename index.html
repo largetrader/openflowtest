@@ -166,6 +166,7 @@
         .esito-win { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; background: rgba(16,185,129,0.1); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.2); }
         .esito-loss { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; background: rgba(239,68,68,0.1); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.2); }
         .esito-be { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; background: rgba(245,158,11,0.1); color: var(--accent-amber); border: 1px solid rgba(245,158,11,0.2); }
+        .esito-neutral { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--border-subtle); }
         .pl-positive { color: var(--accent-green); font-weight: 600; }
         .pl-negative { color: var(--accent-red); font-weight: 600; }
         .pl-na { color: var(--text-muted); }
@@ -505,13 +506,17 @@ function renderTable(sessions, filter) {
         const rrText = s.rr || '—';
 
         const bias = (s.bias || '').toUpperCase();
-        const dirClass = bias === 'LONG' ? 'dir-long' : 'dir-short';
-        const dirIcon = bias === 'LONG' ? '▲' : '▼';
+        const isLong = bias === 'LONG';
+        const isShort = bias === 'SHORT';
+        const dirClass = isLong ? 'dir-long' : (isShort ? 'dir-short' : '');
+        const dirIcon = isLong ? '▲' : (isShort ? '▼' : '');
+        const dirText = isLong ? '▲ LONG' : (isShort ? '▼ SHORT' : bias || '—');
 
         const esitoUpper = (s.esito || '').toUpperCase();
-        let esitoClass = 'esito-be';
+        let esitoClass = 'esito-neutral';
         if (esitoUpper === 'WIN') esitoClass = 'esito-win';
         else if (esitoUpper === 'LOSS') esitoClass = 'esito-loss';
+        else if (esitoUpper === 'BE') esitoClass = 'esito-be';
 
         const videoUrl = (s.video || '').trim();
         const videoCell = videoUrl 
@@ -520,7 +525,7 @@ function renderTable(sessions, filter) {
 
         return `<tr>
             <td class="entry-val">${formatDate(s.data)}</td>
-            <td><span class="${dirClass}">${dirIcon} ${bias}</span></td>
+            <td><span class="${dirClass}">${dirText}</span></td>
             <td class="entry-val">${s.entrata || '—'}</td>
             <td class="stop-val">${s.stop || '—'}</td>
             <td class="entry-val">${s.uscita || '—'}</td>
